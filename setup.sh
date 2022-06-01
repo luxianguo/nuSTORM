@@ -1,0 +1,4 @@
+export TMPLOCAL=$(pwd)/TKI
+export LOCALBIN=${TMPLOCAL}/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${TMPLOCAL}/style
+export PATH=$PATH:${LOCALBIN}
