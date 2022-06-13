@@ -16,10 +16,14 @@ void draw(TList * lout)
   cc->SetRightMargin(0.03);//right margin as small as possible, not to cut away the x axis label
   cc->SetTopMargin(0.06);//top margin
 
-  TLegend * lg = new TLegend(0.60, 0.50, 0.93, 0.92);//adjust the legend box position here
+  TLegend * lg0 = new TLegend(0.66, 0.77, 0.94, 0.91);//adjust the legend box position here
+  TLegend * lg = new TLegend(0.78, 0.45, 0.98, 0.77);//adjust the legend box position here
 
+  style::ResetStyle(lg0, 0.2);//width of the key
   style::ResetStyle(lg, 0.2);//width of the key
-  lg->SetHeader("nuSTORM #bar{#nu}_{#mu} Preliminary","C");//need to change to #nu_{e} everywhere for #nu_{e}
+  lg0->SetHeader("nuSTORM Preliminary","C");//need to change to #nu_{e} everywhere for #nu_{e}
+  lg0->AddEntry((TObject*)0, "#bar{#nu}_{#mu} flux (2206v2)", "");
+  lg0->AddEntry((TObject*)0, "#it{p}_{#mu} (GeV/#it{c}) #pm 16%", "");
 
   const int *cols=style::GetColorArray();
 
@@ -36,17 +40,24 @@ void draw(TList * lout)
     if ((ii != 5) and (ii != 7)) {
       //here set for each histogram
       hh->GetXaxis()->SetTitle("#it{E}_{#nu} (GeV)");
-      hh->GetYaxis()->SetTitle("#it{#Phi}_{#bar{#nu}_{#mu}}(#it{E}_{#nu}) (area normalised)");//Question: is it really event rates of interaction, or just flux?
+      hh->GetYaxis()->SetTitle("#it{#Phi}_{#bar{#nu}_{#mu}}(#it{E}_{#nu}) (area normalised)");
       hh->GetXaxis()->SetRangeUser(0,6); //used 8 for nu_e and 8.5 for nu_mu
+      hh->GetYaxis()->SetRangeUser(0,3.8); //for non-log plot
+      //hh->GetYaxis()->SetRangeUser(0.03,4.5); //for log plot
+      //hh->GetYaxis()->SetTitleOffset(1.15); //for log plot
+      //hh->GetYaxis()->SetLabelOffset(0.001); //for log plot
       hh->SetLineWidth(2);
       hh->SetLineColor(style::GetColor(cols_sel[ii]));
-      hh->Draw(ii?"hist same":"hist");//use C for smooth curve, expected to work for high statistics
-      const TString tmp=Form("#it{p}_{#mu} = %.2f GeV/#it{c} #pm 16", centPmu[ii]);
-      lg->AddEntry(hh, tmp+percent, "l");
+      hh->Draw(ii?"hist same":"hist");//use "hist C" for smooth curve, expected to work for high statistics
+      //const TString tmp=Form("%.2f", centPmu[ii]);
+      lg->AddEntry(hh, Form("%.2f", centPmu[ii]), "l");
     }
   }
 
+  //pt->Draw();
+  lg0->Draw();
   lg->Draw();
+  //cc->SetLogy(); //Use this to show y-axis in log
   cc->Print("hnumuE_norm_sel_ext.png");
   cc->Print("hnumuE_norm_sel_ext.pdf");
   cc->Print("hnumuE_norm_sel_ext.eps");
