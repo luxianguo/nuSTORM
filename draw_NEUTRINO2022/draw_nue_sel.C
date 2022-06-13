@@ -23,52 +23,27 @@ void draw(TList * lout)
 
   const int *cols=style::GetColorArray();
 
-  TList* hists = new TList;
-
-  int iii = 0;
+  //create new arrays with selected colors for plot and muon central momenta for histograms and legend entries --> arrays need to be same size as lout !
+  const int cols_sel[9] = {cols[0],cols[1],cols[2],cols[5],cols[6],cols[8],cols[10],cols[11],cols[12]};
+  const float centPmu[9] = {0.57, 1.16, 1.80, 2.46, 3.12, 3.85, 4.60, 5.30, 6.00};
+  const TString percent = "%"; //needs to be created because single % will give error in Form()
 
   for(int ii=0; ii<lout->GetSize(); ii++){
     TH1F * hh = dynamic_cast<TH1F *> (lout->At(ii));
     style::ResetStyle(hh);
 
-    hists->Add(hh);
-
-    std::cout<<iii<<std::endl;
-
-    if ((ii == 1) or (ii == 3) or (ii == 5) or (ii == 7) or (ii == 0)) {
-
+    if ((ii != 1) and (ii != 3)) {
       //here set for each histogram
       hh->GetXaxis()->SetTitle("#it{E}_{#nu} (GeV)");
       hh->GetYaxis()->SetTitle("#it{#Phi}_{#nu_{e}}(#it{E}_{#nu}) (a.u.)");//Question: is it really event rates of interaction, or just flux?
       hh->GetXaxis()->SetRangeUser(0,8); //used 8 for nu_e and 8.5 for nu_mu
       hh->SetLineWidth(2);
-      // if (ii==7){
-      //   hh->SetLineColor(style::GetColor(cols[9]));
-      // }
-      // else {
-      hh->SetLineColor(style::GetColor(cols[iii]));
-      //}
-      hh->Draw(ii?"same":"");//use C for smooth curve, expected to work for high statistics
-      const TString tmp=hh->GetName();
-      //lg->AddEntry(hh, Form("abc %c", tmp[6]), "l");//Here you have to replace hh->GetName() by the actual identifier of the histogram
-
-    }
-
-    iii = iii+1;
-    if ((iii==7) or (iii==3)){
-      iii = iii+1;
+      hh->SetLineColor(style::GetColor(cols_sel[lout->GetSize()-1-ii]));
+      hh->Draw(ii?"hist same":"hist");//use C for smooth curve, expected to work for high statistics
+      const TString tmp=Form("#it{p}_{#mu} = %.2f GeV/#it{c} #pm 16", centPmu[lout->GetSize()-1-ii]);
+      lg->AddEntry(hh, tmp+percent, "l");
     }
   }
-
-  //lg->AddEntry(hists->At(8),"#it{p}_{#mu} = 0.57 GeV/#it{c} #pm 16%", "l");
-  lg->AddEntry(hists->At(7),"#it{p}_{#mu} = 1.16 GeV/#it{c} #pm 16%", "l");
-  //lg->AddEntry(hists->At(6),"#it{p}_{#mu} = 1.80 GeV/#it{c} #pm 16%", "l");
-  lg->AddEntry(hists->At(5),"#it{p}_{#mu} = 2.46 GeV/#it{c} #pm 16%", "l");
-  //lg->AddEntry(hists->At(4),"#it{p}_{#mu} = 3.12 GeV/#it{c} #pm 16%", "l");
-  lg->AddEntry(hists->At(3),"#it{p}_{#mu} = 3.85 GeV/#it{c} #pm 16%", "l");
-  //lg->AddEntry(hists->At(2),"#it{p}_{#mu} = 4.60 GeV/#it{c} #pm 16%", "l");
-  lg->AddEntry(hists->At(1),"#it{p}_{#mu} = 5.30 GeV/#it{c} #pm 16%", "l");
-  lg->AddEntry(hists->At(0),"#it{p}_{#mu} = 6.00 GeV/#it{c} #pm 16%", "l");
 
   lg->Draw();
   cc->Print("hnueE_sel.png");
