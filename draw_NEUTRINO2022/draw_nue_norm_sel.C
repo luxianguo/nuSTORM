@@ -30,35 +30,37 @@ void draw(TList * lout)
   //create new arrays with selected colors for plot and muon central momenta for histograms and legend entries
   const int cols_sel[9] = {cols[0],cols[1],cols[2],cols[5],cols[6],cols[8],cols[10],cols[11],cols[12]};
   const float centPmu[9] = {0.57, 1.16, 1.80, 2.46, 3.12, 3.85, 4.60, 5.30, 6.00};
-  const TString percent = "%"; //needs to be created because single % will give error in Form()
 
   for(int ii=0; ii<lout->GetSize(); ii++){
     TH1F * hh = dynamic_cast<TH1F *> (lout->At(ii));
     style::ResetStyle(hh);
 
+    //skip two energies to make plot more legible
     if ((ii != 5) and (ii != 7)) {
       //here set for each histogram
       hh->GetXaxis()->SetTitle("#it{E}_{#nu} (GeV)");
       hh->GetYaxis()->SetTitle("#it{#Phi}_{#nu_{e}}(#it{E}_{#nu}) (area normalised)");//Question: is it really event rates of interaction, or just flux?
       hh->GetXaxis()->SetRangeUser(0,6); //used 8 for nu_e and 8.5 for nu_mu
-      // hh->GetYaxis()->SetRangeUser(0,3.8); //for non-log plot
-      hh->GetYaxis()->SetRangeUser(0.03,4.5); //for log plot
-      hh->GetYaxis()->SetTitleOffset(1.15); //for log plot
-      hh->GetYaxis()->SetLabelOffset(0.001); //for log plot
+      hh->GetYaxis()->SetRangeUser(0,3.8); //for non-log plot
+      // hh->GetYaxis()->SetRangeUser(0.03,4.5); //for log plot
+      // hh->GetYaxis()->SetTitleOffset(1.15); //for log plot
+      // hh->GetYaxis()->SetLabelOffset(0.001); //for log plot
       hh->SetLineWidth(2);
       hh->SetLineColor(style::GetColor(cols_sel[ii]));
       hh->Draw(ii?"hist same":"hist");//use "hist C" for smooth curve, expected to work for high statistics
-      //const TString tmp=Form("#it{p}_{#mu} = %.2f GeV/#it{c} #pm 16", centPmu[ii]);
       lg->AddEntry(hh, Form("%.2f", centPmu[ii]), "l");
     }
   }
 
   lg0->Draw();
   lg->Draw();
-  cc->SetLogy(); //Use this to show y-axis in log
-  cc->Print("hnueE_norm_sel_ext_log.png");
-  cc->Print("hnueE_norm_sel_ext_log.pdf");
-  cc->Print("hnueE_norm_sel_ext_log.eps");
+  cc->Print("hnueE_norm_sel_ext.png"); //Use this to save non-log plot
+  cc->Print("hnueE_norm_sel_ext.pdf"); //Use this to save non-log plot
+  cc->Print("hnueE_norm_sel_ext.eps"); //Use this to save non-log plot
+  // cc->SetLogy(); //Use this to show y-axis in log
+  // cc->Print("hnueE_norm_sel_ext_log.png"); //Use this to save log plot
+  // cc->Print("hnueE_norm_sel_ext_log.pdf"); //Use this to save log plot
+  // cc->Print("hnueE_norm_sel_ext_log.eps"); //Use this to save log plot
 }
 
 int main()
